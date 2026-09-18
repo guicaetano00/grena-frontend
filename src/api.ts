@@ -53,24 +53,37 @@ export async function healthCheck() {
 }
 
 export const api = {
+  get: <T>(path: string) =>
+    request<T>(path),
+
+  put: <T>(path: string, body: unknown) =>
+    request<T>(path, {
+      method: "PUT",
+      body: JSON.stringify(body)
+    }),
+
   listar: async <T>(entity: ApiEntity) => {
     const data = await request<T[]>(`/api/${entity}`);
     return data.map(item => normalizeEntity(entity, item));
   },
+
   buscar: async <T>(entity: ApiEntity, id: number) => {
     const data = await request<T>(`/api/${entity}/${id}`);
     return normalizeEntity(entity, data);
   },
+
   criar: <T>(entity: ApiEntity, body: T) =>
     request<{ mensagem: string }>(`/api/${entity}`, {
       method: "POST",
       body: JSON.stringify(serializeBody(entity, body))
     }),
+
   atualizar: <T>(entity: ApiEntity, id: number, body: T) =>
     request<{ mensagem: string }>(`/api/${entity}/${id}`, {
       method: "PUT",
       body: JSON.stringify(serializeBody(entity, body))
     }),
+
   remover: (entity: ApiEntity, id: number) =>
     request<{ mensagem: string }>(`/api/${entity}/${id}`, {
       method: "DELETE"

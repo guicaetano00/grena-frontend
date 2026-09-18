@@ -1,11 +1,18 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 interface ImagemProdutoProps {
   nome: string;
 }
 
 interface RespostaImagem {
+  nome?: string;
   imagem?: string;
+  titulo?: string;
+  fonte?: string;
+  erro?: string;
 }
 
 function ImagemProduto({
@@ -29,20 +36,33 @@ function ImagemProduto({
           import.meta.env.VITE_API_URL ||
           "http://localhost:3000";
 
-        const resposta = await fetch(
+        const url =
           `${apiUrl}/api/imagem-produto?nome=${encodeURIComponent(
             nome
-          )}`
+          )}`;
+
+        console.log(
+          "Buscando imagem:",
+          url
         );
 
-        if (!resposta.ok) {
-          throw new Error(
-            `Erro ${resposta.status}`
-          );
-        }
+        const resposta =
+          await fetch(url);
 
         const dados: RespostaImagem =
           await resposta.json();
+
+        if (!resposta.ok) {
+          console.error(
+            `Erro ao buscar imagem de ${nome}:`,
+            dados
+          );
+
+          throw new Error(
+            dados.erro ||
+              `Erro ${resposta.status}`
+          );
+        }
 
         if (
           ativo &&
@@ -68,7 +88,12 @@ function ImagemProduto({
       }
     }
 
-    buscarImagem();
+    if (nome.trim()) {
+      buscarImagem();
+    } else {
+      setCarregando(false);
+      setImagem("");
+    }
 
     return () => {
       ativo = false;
@@ -78,7 +103,9 @@ function ImagemProduto({
   if (carregando) {
     return (
       <div className="produto-card-imagem produto-imagem-loading">
-        <span>Buscando...</span>
+        <span>
+          Buscando...
+        </span>
       </div>
     );
   }
@@ -101,9 +128,15 @@ function ImagemProduto({
         src={imagem}
         alt={nome}
         loading="lazy"
-        onError={() =>
-          setImagem("")
-        }
+        referrerPolicy="no-referrer"
+        onError={() => {
+          console.error(
+            `A imagem de "${nome}" não carregou:`,
+            imagem
+          );
+
+          setImagem("");
+        }}
       />
     </div>
   );
