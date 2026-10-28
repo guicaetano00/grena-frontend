@@ -16,11 +16,25 @@ class AuthRequests {
    * @returns o usuário autenticado (com role) em caso de sucesso
    */
   async login(email: string, senha: string): Promise<Usuario> {
-    const response = await fetch(`${this.serverUrl}${this.endpointLogin}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, senha })
-    });
+    const url = `${this.serverUrl}${this.endpointLogin}`;
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha })
+      });
+    } catch {
+      throw new Error(`Não foi possível conectar à API em ${this.serverUrl}. Verifique se o backend está rodando.`);
+    }
+
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(
+        `A API em ${this.serverUrl} não respondeu JSON (HTTP ${response.status}). ` +
+          "Verifique se o backend GRENÁ está rodando nessa porta e se VITE_API_URL está correto."
+      );
+    }
 
     const data = await response.json();
 
