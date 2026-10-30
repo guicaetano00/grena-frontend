@@ -1363,3 +1363,51 @@ button:disabled {
 .perfil-erro { color: #ff6b6b; }
 /* ===== CATÁLOGO GRENÁ 2026 - filtros e página de produto ===== */
 .loja-topo{padding:20px 38px;background:#170b10;display:flex;flex-direction:column;gap:15px}.loja-topo .loja-busca{width:min(100%,1100px);align-self:center;height:48px}.catalogo-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px;padding:28px 38px 60px;background:#170b10}.filtros-sidebar{background:#20111a;border:1px solid #5a2638;border-radius:16px;padding:18px;height:max-content;position:sticky;top:18px}.filtro-titulo{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;color:#fff}.filtro-titulo button{background:none;border:0;color:#d5a24a;cursor:pointer}.filtro-grupo{display:flex;flex-direction:column;gap:7px;margin:0 0 16px;color:#e7d8dc;font-size:13px;font-weight:700}.filtro-grupo select,.catalogo-barra select{background:#170b10;border:1px solid #5a2638;color:#fff;border-radius:9px;padding:10px}.filtro-check{display:flex;gap:8px;color:#e7d8dc;font-size:13px}.catalogo-barra{display:flex;justify-content:space-between;align-items:center;color:#fff;margin-bottom:18px}.nova-grid{padding:0;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}.produto-card-link{text-decoration:none;color:inherit;position:relative}.produto-desconto{position:absolute;z-index:4;top:12px;left:12px;background:#b52b4a;color:#fff;padding:6px 9px;border-radius:7px;font-size:12px;font-weight:900}.produto-card-corpo small{color:#a98d95}.produto-card-corpo h3{margin:7px 0}.produto-rating{color:#d5a24a;font-size:13px}.produto-rating span{color:#927981}.produto-card-corpo del{display:block;color:#8f747c;font-size:12px;margin-top:10px}.produto-preco{display:block;color:#fff;font-size:21px;margin-top:2px}.produto-preco small{color:#d5a24a;font-size:11px}.produto-parcela{font-size:11px!important;color:#a98d95!important;margin-top:4px!important}.produto-detalhe-page{max-width:1250px;margin:auto;padding:28px 30px 70px}.breadcrumb{color:#9f858d;font-size:13px;margin-bottom:24px}.breadcrumb a{color:#d5a24a}.produto-detalhe-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(360px,.9fr);gap:50px}.produto-galeria .produto-card-imagem{height:560px;border-radius:20px;background:#fff}.produto-galeria .produto-card-imagem img{object-fit:contain}.produto-compra{background:#20111a;border:1px solid #5a2638;border-radius:20px;padding:28px}.produto-marca{color:#d5a24a;font-weight:800}.produto-compra h1{font-size:30px;margin:8px 0 12px;color:#fff}.produto-codigo{color:#8f747c;font-size:12px}.produto-compra del{color:#927981}.produto-preco-detalhe{font-size:34px;font-weight:900;color:#fff;margin-top:4px}.produto-preco-detalhe small{font-size:13px;color:#d5a24a}.produto-opcao{margin-top:24px;color:#fff}.opcoes-botoes{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.opcoes-botoes button{min-width:45px;padding:9px 12px;border-radius:8px;border:1px solid #654052;background:#170b10;color:#eee;cursor:pointer}.opcoes-botoes button.ativo{border-color:#d5a24a;color:#f4d9a0;box-shadow:0 0 0 1px #d5a24a}.produto-quantidade{display:flex;align-items:center;gap:15px;margin:24px 0}.produto-quantidade button{width:36px;height:36px;border-radius:50%;border:1px solid #5a2638;background:#170b10;color:#fff}.produto-comprar{width:100%;padding:15px;font-size:15px}.produto-aviso{color:#d5a24a}.produto-informacoes{margin-top:45px;background:#20111a;border:1px solid #5a2638;border-radius:20px;padding:30px;color:#d9c7cc}.produto-informacoes h2{color:#fff}.caracteristicas-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:#5a2638;border:1px solid #5a2638;border-radius:12px;overflow:hidden}.caracteristicas-grid div{display:flex;justify-content:space-between;gap:20px;background:#170b10;padding:14px}.caracteristicas-grid span{color:#9f858d}.caracteristicas-grid strong{color:#fff;text-align:right}@media(max-width:900px){.catalogo-layout{grid-template-columns:1fr;padding:20px}.filtros-sidebar{position:static}.produto-detalhe-grid{grid-template-columns:1fr}.produto-galeria .produto-card-imagem{height:430px}}@media(max-width:600px){.loja-topo{padding:15px}.catalogo-layout{padding:15px}.nova-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.produto-card-corpo{padding:12px}.produto-card-corpo h3{font-size:13px}.produto-preco{font-size:17px}.produto-detalhe-page{padding:18px 14px}.produto-galeria .produto-card-imagem{height:360px}.produto-compra{padding:20px}.produto-compra h1{font-size:24px}.caracteristicas-grid{grid-template-columns:1fr}}@media(max-width:420px){.nova-grid{grid-template-columns:1fr}}
+
+.admin-col {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+.busca-id-form {
+  display: flex;
+  gap: 8px;
+}
+.busca-id-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #263852;
+  background: #101a2a;
+  color: #e8edf7;
+  border-radius: 9px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 13px;
+}
+.busca-id-form input:focus {
+  outline: none;
+  border-color: #9e2845;
+}
+.busca-id-erro {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: #ff7882;
+}
+.busca-id-resultado {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 14px;
+  margin: 14px 0 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #101a2a;
+  font-size: 12px;
+}
+.busca-id-resultado dt {
+  color: #6f8099;
+  font-weight: 600;
+}
+.busca-id-resultado dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}

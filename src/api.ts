@@ -10,11 +10,12 @@ function getToken() {
 
 function normalizeEntity<T>(entity: ApiEntity, value: T): T {
   if (entity !== "pedidos" || !value || typeof value !== "object") return value;
-  const item = value as T & { total?: number; valorTotal?: number };
-  if (item.valorTotal === undefined && item.total !== undefined) {
-    return { ...item, valorTotal: Number(item.total) } as T;
-  }
-  return item;
+  const item = value as T & { total?: number; valorTotal?: number; createdAt?: string; dataPedido?: string };
+  return {
+    ...item,
+    valorTotal: item.valorTotal ?? (item.total !== undefined ? Number(item.total) : undefined),
+    dataPedido: item.dataPedido ?? item.createdAt
+  } as T;
 }
 
 function serializeBody(entity: ApiEntity, body: unknown) {
