@@ -1411,3 +1411,85 @@ button:disabled {
   margin: 0;
   overflow-wrap: anywhere;
 }
+
+/* ===== Página de produto: detalhes, frete e avaliações ===== */
+.produto-galeria { position: relative; }
+.estrelas { position: relative; display: inline-block; line-height: 1; letter-spacing: 1px; font-size: 15px; }
+.estrelas.grande { font-size: 24px; }
+.estrelas-fundo { color: #5a3a46; }
+.estrelas-cheias { position: absolute; inset: 0 auto 0 0; overflow: hidden; white-space: nowrap; color: #f0b847; }
+a.produto-rating.grande { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #f4d9a0; font-size: 14px; }
+a.produto-rating.grande:hover span { text-decoration: underline; }
+.produto-preco-bloco { margin-top: 16px; padding: 16px 0; border-top: 1px solid #4a2232; border-bottom: 1px solid #4a2232; }
+.produto-preco-antigo { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.produto-economia { background: #1f3b2d; color: #7ee2ae; border-radius: 6px; padding: 3px 8px; font-size: 12px; font-weight: 700; }
+.produto-parcelamento { margin: 6px 0 0; color: #e8dce0; }
+.produto-estoque { margin: 10px 0 0; color: #e2d3d7; font-size: 13px; }
+.produto-estoque.baixo { color: #ffb36b; font-weight: 700; }
+.produto-frete { margin-top: 22px; display: grid; gap: 8px; }
+.produto-frete label { color: #fff; font-weight: 700; font-size: 14px; }
+.produto-frete > div { display: flex; gap: 8px; }
+.produto-frete input,
+.avaliacoes-form input,
+.avaliacoes-form textarea,
+.avaliacoes-form select,
+.avaliacoes-barra-lista select {
+  background: #170b10; border: 1px solid #654052; border-radius: 9px; color: #fff; padding: 10px 12px; font: inherit; font-size: 14px;
+}
+.produto-frete input { flex: 1; min-width: 0; }
+.produto-frete input:focus, .avaliacoes-form input:focus, .avaliacoes-form textarea:focus { outline: none; border-color: #d5a24a; }
+.produto-frete-erro { margin: 0; color: #ff8f97; font-size: 13px; }
+.produto-frete-resultado { margin: 0; color: #e8dce0; font-size: 13px; }
+.produto-frete-resultado b { color: #7ee2ae; }
+.produto-beneficios { list-style: none; margin: 20px 0 0; padding: 14px 16px; display: grid; gap: 8px; background: #170b10; border-radius: 12px; font-size: 13px; color: #e2d3d7; }
+.produto-beneficios li::before { content: "✓ "; color: #d5a24a; font-weight: 900; }
+.produto-beneficios b { color: #fff; }
+
+.avaliacoes-topo { display: grid; grid-template-columns: 180px minmax(0, 1fr) minmax(0, 1.2fr); gap: 28px; align-items: start; }
+.avaliacoes-media { display: grid; justify-items: center; gap: 6px; padding: 18px; background: #170b10; border-radius: 14px; text-align: center; }
+.avaliacoes-media strong { font-size: 44px; color: #fff; line-height: 1; }
+.avaliacoes-media > span { color: #e2d3d7; font-size: 13px; }
+.avaliacoes-recomendam { color: #7ee2ae !important; font-weight: 700; }
+.avaliacoes-barras { display: grid; gap: 8px; }
+.avaliacoes-barras button { display: grid; grid-template-columns: 34px 1fr 28px; align-items: center; gap: 10px; background: none; border: 1px solid transparent; border-radius: 8px; padding: 4px 6px; color: #f4d9a0; font: inherit; font-size: 13px; cursor: pointer; text-align: left; }
+.avaliacoes-barras button:disabled { cursor: default; opacity: .7; }
+.avaliacoes-barras button.ativo, .avaliacoes-barras button:hover:not(:disabled) { border-color: #d5a24a; }
+.avaliacoes-barras .barra { height: 8px; background: #3a1c28; border-radius: 99px; overflow: hidden; }
+.avaliacoes-barras .barra span { display: block; height: 100%; background: #f0b847; border-radius: 99px; }
+.avaliacoes-form form, .avaliacoes-login { display: grid; gap: 10px; padding: 18px; background: #170b10; border-radius: 14px; }
+.avaliacoes-form strong { color: #fff; }
+.avaliacoes-login p { margin: 0; color: #e8dce0; }
+.avaliacoes-login a { text-align: center; text-decoration: none; }
+.avaliacoes-form textarea { resize: vertical; }
+.avaliacoes-escolher-nota { display: flex; align-items: center; gap: 2px; }
+.avaliacoes-escolher-nota button { background: none; border: 0; padding: 0 2px; font-size: 28px; line-height: 1; color: #5a3a46; cursor: pointer; }
+.avaliacoes-escolher-nota button.cheia { color: #f0b847; }
+.avaliacoes-escolher-nota span { margin-left: 8px; color: #f4d9a0; font-size: 13px; }
+.avaliacoes-recomenda { display: flex; align-items: center; gap: 8px; color: #e8dce0; font-size: 14px; }
+.avaliacoes-recomenda button { padding: 6px 14px; border-radius: 8px; border: 1px solid #654052; background: #20111a; color: #eee; cursor: pointer; }
+.avaliacoes-recomenda button.ativo { border-color: #d5a24a; color: #f4d9a0; box-shadow: 0 0 0 1px #d5a24a; }
+.avaliacoes-barra-lista { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 28px; padding-top: 18px; border-top: 1px solid #4a2232; color: #e8dce0; font-size: 14px; }
+.avaliacoes-barra-lista span button { margin-left: 10px; background: none; border: 0; color: #d5a24a; cursor: pointer; font: inherit; }
+.avaliacoes-vazio { margin: 24px 0 0; color: #e2d3d7; }
+.avaliacoes-lista { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 14px; }
+.avaliacoes-lista li { padding: 18px; background: #170b10; border: 1px solid #3a1c28; border-radius: 14px; }
+.avaliacoes-lista p { margin: 10px 0; color: #f2e6ea; line-height: 1.5; }
+.avaliacao-cabecalho { display: flex; align-items: center; gap: 12px; }
+.avaliacao-cabecalho strong { display: block; color: #fff; }
+.avaliacao-cabecalho small { color: #cdb8bd; }
+.avaliacao-avatar { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: #9e2845; color: #fff; font-weight: 800; }
+.avaliacao-excluir { margin-left: auto; background: none; border: 1px solid #654052; border-radius: 8px; color: #ff8f97; padding: 5px 10px; cursor: pointer; font-size: 12px; }
+.avaliacao-nota { display: flex; align-items: center; gap: 10px; margin-top: 12px; color: #fff; }
+.avaliacao-rodape { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: #e2d3d7; }
+.avaliacao-rodape .sim { color: #7ee2ae; }
+.avaliacao-rodape .nao { color: #ff8f97; }
+.produto-relacionados { margin-top: 45px; }
+.produto-relacionados h2 { color: #fff; }
+.produto-relacionados .loja-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 980px) {
+  .avaliacoes-topo { grid-template-columns: 1fr; }
+  .produto-relacionados .loja-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.loja-rodape { margin-top: 60px; padding: 28px 6%; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid #4a2232; background: #170b10; color: #e2d3d7; font-size: 14px; }
+.loja-rodape strong { color: #f4d9a0; }
+.loja-rodape-copy { color: #cdb8bd; font-size: 13px; }
