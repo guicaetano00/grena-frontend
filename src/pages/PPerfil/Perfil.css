@@ -1,5 +1,5 @@
 .perfil-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 140px);
 
   display: flex;
   justify-content: center;
@@ -7,7 +7,7 @@
 
   padding: 40px 20px;
 
-  background-color: #f5f5f5;
+  background-color: transparent;
 }
 
 .perfil-container {
@@ -222,4 +222,11 @@
   text-align: center;
 
   color: #555;
+}
+.perfil-sucesso {
+  background: #e3f7ec;
+  color: #0f6b3a;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
 }

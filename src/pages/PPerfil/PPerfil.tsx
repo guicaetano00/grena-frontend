@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { getPerfil, atualizarPerfil } from "../../fetch/perfil";
-import { UserProfile } from "../../types";
+import type { UserProfile } from "../../types";
+import Navegacao from "../../components/Navegacao/Navegacao";
+import Rodape from "../../components/Rodape/Rodape";
+import { useCarrinho } from "../../context/CarrinhoContext";
 import "./Perfil.css";
 
 export default function Perfil() {
@@ -10,6 +13,8 @@ export default function Perfil() {
   const [salvando, setSalvando] = useState(false);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState("");
+  const { quantidadeTotal } = useCarrinho();
 
   useEffect(() => {
     async function carregarPerfil() {
@@ -20,8 +25,8 @@ export default function Perfil() {
 
         setPerfil(data);
         setForm(data);
-      } catch {
-        setErro("Não foi possível carregar seu perfil.");
+      } catch (error) {
+        setErro(error instanceof Error ? error.message : "Não foi possível carregar seu perfil.");
       } finally {
         setCarregando(false);
       }
@@ -49,6 +54,7 @@ export default function Perfil() {
     try {
       setSalvando(true);
       setErro("");
+      setSucesso("");
 
       const atualizado = await atualizarPerfil(form);
 
@@ -56,8 +62,9 @@ export default function Perfil() {
       setForm(atualizado);
 
       setEditando(false);
-    } catch {
-      setErro("Não foi possível salvar as alterações.");
+      setSucesso("Perfil atualizado com sucesso.");
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : "Não foi possível salvar as alterações.");
     } finally {
       setSalvando(false);
     }
@@ -71,16 +78,22 @@ export default function Perfil() {
 
   if (carregando) {
     return (
+      <div className="loja-page">
+      <Navegacao cartCount={quantidadeTotal} />
       <div className="perfil-page">
         <p className="perfil-hint">Carregando perfil...</p>
+      </div>
       </div>
     );
   }
 
   if (erro && !perfil) {
     return (
+      <div className="loja-page">
+      <Navegacao cartCount={quantidadeTotal} />
       <div className="perfil-page">
         <p className="perfil-erro">{erro}</p>
+      </div>
       </div>
     );
   }
@@ -88,7 +101,9 @@ export default function Perfil() {
   if (!perfil || !form) return null;
 
   return (
-    <div className="perfil-page">
+    <div className="loja-page">
+      <Navegacao cartCount={quantidadeTotal} />
+      <div className="perfil-page">
 
       <div className="perfil-container">
 
@@ -109,6 +124,8 @@ export default function Perfil() {
           </p>
         )}
 
+        {sucesso && <p className="perfil-sucesso">{sucesso}</p>}
+
         {!editando ? (
 
           <div className="perfil-view">
@@ -123,16 +140,21 @@ export default function Perfil() {
               <p>{perfil.email}</p>
             </div>
 
-            {perfil.telefone && (
+            {perfil.cpf && (
               <div className="perfil-info">
-                <span>Telefone</span>
-                <p>{perfil.telefone}</p>
+                <span>CPF</span>
+                <p>{perfil.cpf}</p>
               </div>
             )}
 
+            <div className="perfil-info">
+              <span>Tipo de conta</span>
+              <p>{perfil.role === "admin" ? "Administrador" : "Cliente"}</p>
+            </div>
+
             <button
               className="btn-editar"
-              onClick={() => setEditando(true)}
+              onClick={() => { setEditando(true); setSucesso(""); }}
             >
               Editar perfil
             </button>
@@ -172,14 +194,16 @@ export default function Perfil() {
             </label>
 
             <label>
-              Telefone
+              CPF
 
               <input
-                value={form.telefone ?? ""}
+                value={form.cpf ?? ""}
                 onChange={(e) =>
-                  handleChange("telefone", e.target.value)
+                  handleChange("cpf", e.target.value)
                 }
-                placeholder="(00) 00000-0000"
+                placeholder="000.000.000-00"
+                maxLength={14}
+                required
               />
             </label>
 
@@ -212,6 +236,8 @@ export default function Perfil() {
 
       </div>
 
+    </div>
+      <Rodape />
     </div>
   );
 }

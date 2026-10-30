@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { api } from "../../api";
+import AuthRequests from "../../fetch/AuthRequests";
+import { useCarrinho } from "../../context/CarrinhoContext";
 
 type MetodoPagamento = "pix" | "cartao" | "boleto";
 
@@ -110,18 +113,13 @@ function PPagamento() {
   const [cpfBoleto, setCpfBoleto] =
     useState("");
 
-  /*
-    TEMPORÁRIO:
-    Depois podemos pegar esses dados diretamente
-    do CarrinhoContext.
-  */
-  const itens: ItemPedido[] = [
-    {
-      nome: "Camisa Grená",
-      preco: 199.9,
-      qtd: 1,
-    },
-  ];
+  const { itens: itensCarrinho, limpar } = useCarrinho();
+
+  const itens: ItemPedido[] = itensCarrinho.map(item => ({
+    nome: [item.nome, item.tamanho, item.cor].filter(Boolean).join(" · "),
+    preco: item.preco,
+    qtd: item.quantidade,
+  }));
 
   const total = itens.reduce(
     (soma, item) =>
@@ -180,7 +178,7 @@ function PPagamento() {
     return "";
   }
 
-  function confirmarPagamento() {
+  async function confirmarPagamento() {
     const mensagemErro =
       validarPagamento();
 
@@ -192,17 +190,26 @@ function PPagamento() {
     setErro("");
     setProcessando(true);
 
-    /*
-      Simulação de pagamento.
-
-      Quando houver integração com Mercado Pago,
-      Stripe, Pagar.me etc., a chamada para a API
-      entrará aqui.
-    */
-    setTimeout(() => {
+    const idUsuario = AuthRequests.getIdUsuario();
+    if (!idUsuario) {
       setProcessando(false);
+      setErro("Sessão expirada. Faça login novamente.");
+      return;
+    }
+
+    try {
+      await api.criar("pedidos", {
+        idUsuario,
+        valorTotal: Number(total.toFixed(2)),
+        status: metodo === "boleto" ? "PENDENTE" : "PAGO",
+      });
+      limpar();
       setConcluido(true);
-    }, 1400);
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : "Não foi possível registrar o pedido.");
+    } finally {
+      setProcessando(false);
+    }
   }
 
   async function copiarPix() {
@@ -245,6 +252,10 @@ function PPagamento() {
   /*
     TELA DE PAGAMENTO CONCLUÍDO
   */
+  if (!concluido && itens.length === 0) {
+    return <Navigate to="/carrinho" replace />;
+  }
+
   if (concluido) {
     return (
       <div
