@@ -320,7 +320,7 @@ function PAdmin() {
                   </select>
                 </Field>
               </FormPanel>
-              <BuscaPorId<Produto> entity="produtos" titulo="Buscar produto por ID" render={p => <><Dado label="ID">#{p.idProduto}</Dado><Dado label="Código">{p.codProduto || "—"}</Dado><Dado label="Nome">{p.nome}</Dado><Dado label="Categoria">{categoryName(p.idCategoria)}</Dado><Dado label="Preço">{money(p.preco)}</Dado><Dado label="Estoque">{p.estoque}</Dado><Dado label="Descrição">{p.descricao || "Sem descrição"}</Dado></>} />
+              <BuscaPorId<Produto> entity="produtos" dados={products} titulo="Buscar produto por ID" render={p => <><Dado label="ID">#{p.idProduto}</Dado><Dado label="Código">{p.codProduto || "—"}</Dado><Dado label="Nome">{p.nome}</Dado><Dado label="Categoria">{categoryName(p.idCategoria)}</Dado><Dado label="Preço">{money(p.preco)}</Dado><Dado label="Estoque">{p.estoque}</Dado><Dado label="Descrição">{p.descricao || "Sem descrição"}</Dado></>} />
             </div>
             <TablePanel title="Produtos" count={products.length}>
               <table><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
@@ -336,7 +336,7 @@ function PAdmin() {
               <FormPanel title={editing ? "Editar categoria" : "Nova categoria"} onSubmit={submitCategory} onCancel={editing ? cancelEdit : undefined}>
                 <Field label="Nome"><input value={categoryForm.nome} onChange={e => setCategoryForm({nome:e.target.value})} placeholder="Ex.: Eletrônicos" /></Field>
               </FormPanel>
-              <BuscaPorId<Categoria> entity="categorias" titulo="Buscar categoria por ID" render={c => <><Dado label="ID">#{c.idCategoria}</Dado><Dado label="Nome">{c.nome}</Dado></>} />
+              <BuscaPorId<Categoria> entity="categorias" dados={categories} titulo="Buscar categoria por ID" render={c => <><Dado label="ID">#{c.idCategoria}</Dado><Dado label="Nome">{c.nome}</Dado></>} />
             </div>
             <TablePanel title="Categorias" count={categories.length}>
               <table><thead><tr><th>ID</th><th>Nome</th><th>Ações</th></tr></thead>
@@ -356,7 +356,7 @@ function PAdmin() {
                 {!editing && <Field label="Senha"><input type="password" value={userForm.senha} onChange={e => setUserForm({...userForm, senha:e.target.value})} /></Field>}
                 {editing && <p className="hint">A API atual não atualiza a senha no PUT; por isso ela não é enviada durante a edição.</p>}
               </FormPanel>
-              <BuscaPorId<Usuario> entity="usuarios" titulo="Buscar usuário por ID" render={u => <><Dado label="ID">#{u.idUsuario}</Dado><Dado label="Nome">{u.nome}</Dado><Dado label="E-mail">{u.email}</Dado><Dado label="CPF">{u.cpf || "—"}</Dado><Dado label="Perfil">{u.role || "cliente"}</Dado></>} />
+              <BuscaPorId<Usuario> entity="usuarios" dados={users} titulo="Buscar usuário por ID" render={u => <><Dado label="ID">#{u.idUsuario}</Dado><Dado label="Nome">{u.nome}</Dado><Dado label="E-mail">{u.email}</Dado><Dado label="CPF">{u.cpf || "—"}</Dado><Dado label="Perfil">{u.role || "cliente"}</Dado></>} />
             </div>
             <TablePanel title="Usuários" count={users.length}>
               <table><thead><tr><th>Usuário</th><th>E-mail</th><th>CPF</th><th>Ações</th></tr></thead>
@@ -383,7 +383,7 @@ function PAdmin() {
                   </select>
                 </Field>
               </FormPanel>
-              <BuscaPorId<Pedido> entity="pedidos" titulo="Buscar pedido por ID" render={o => <><Dado label="ID">#{o.idPedido}</Dado><Dado label="Código">{o.codPedido || "—"}</Dado><Dado label="Usuário">{userName(o.idUsuario)}</Dado><Dado label="Data">{formatDate(o.dataPedido)}</Dado><Dado label="Total">{money(o.valorTotal)}</Dado><Dado label="Status"><Status status={o.status} /></Dado></>} />
+              <BuscaPorId<Pedido> entity="pedidos" dados={orders} titulo="Buscar pedido por ID" render={o => <><Dado label="ID">#{o.idPedido}</Dado><Dado label="Código">{o.codPedido || "—"}</Dado><Dado label="Usuário">{userName(o.idUsuario)}</Dado><Dado label="Data">{formatDate(o.dataPedido)}</Dado><Dado label="Total">{money(o.valorTotal)}</Dado><Dado label="Status"><Status status={o.status} /></Dado></>} />
             </div>
             <TablePanel title="Pedidos" count={orders.length}>
               <table><thead><tr><th>Pedido</th><th>Usuário</th><th>Data</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
@@ -415,33 +415,47 @@ function Actions({onEdit,onDelete}:{onEdit:()=>void;onDelete:()=>void}) {
 function Status({status}:{status?:string}) {
   return <span className={`status ${String(status || "PENDENTE").toLowerCase()}`}>{status || "PENDENTE"}</span>;
 }
-function BuscaPorId<T>({entity,titulo,render}:{entity:ApiEntity;titulo:string;render:(item:T)=>ReactNode}) {
+function BuscaPorId<T>({entity,dados,titulo,render}:{entity:ApiEntity;dados:unknown[];titulo:string;render:(item:T)=>ReactNode}) {
   const [id, setId] = useState("");
+  const [idBuscado, setIdBuscado] = useState<number | null>(null);
   const [item, setItem] = useState<T | null>(null);
   const [erro, setErro] = useState("");
   const [buscando, setBuscando] = useState(false);
 
-  async function buscar(e: FormEvent) {
-    e.preventDefault();
-    const numero = Number(id);
-    setItem(null);
-    if (!Number.isInteger(numero) || numero <= 0) {
-      setErro("Informe um ID válido (número inteiro maior que zero).");
-      return;
-    }
-    setErro("");
+  async function executar(numero: number) {
     setBuscando(true);
     try {
       setItem(await api.buscar<T>(entity, numero));
+      setErro("");
     } catch (error) {
+      setItem(null);
       setErro(error instanceof Error ? error.message : "Registro não encontrado.");
     } finally {
       setBuscando(false);
     }
   }
 
+  useEffect(() => {
+    if (idBuscado !== null) executar(idBuscado);
+  }, [dados]);
+
+  async function buscar(e: FormEvent) {
+    e.preventDefault();
+    const numero = Number(id);
+    setItem(null);
+    if (!Number.isInteger(numero) || numero <= 0) {
+      setIdBuscado(null);
+      setErro("Informe um ID válido (número inteiro maior que zero).");
+      return;
+    }
+    setErro("");
+    setIdBuscado(numero);
+    await executar(numero);
+  }
+
   function limpar() {
     setId("");
+    setIdBuscado(null);
     setItem(null);
     setErro("");
   }
