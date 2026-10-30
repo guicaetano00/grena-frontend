@@ -67,7 +67,7 @@
 .perfil-header p {
   margin-top: 5px;
 
-  color: #777;
+  color: #555;
 }
 
 .perfil-view {
@@ -90,7 +90,7 @@
 .perfil-info span {
   font-size: 13px;
 
-  color: #777;
+  color: #555;
 }
 
 .perfil-info p {
@@ -221,5 +221,5 @@
 .perfil-hint {
   text-align: center;
 
-  color: #777;
+  color: #555;
 }
