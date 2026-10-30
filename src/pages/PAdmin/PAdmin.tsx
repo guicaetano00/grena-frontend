@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { api, healthCheck, API_URL } from "../../api";
-import type { Categoria, Pedido, Produto, Usuario } from "../../types";
+import type { ApiEntity, Categoria, Pedido, Produto, Usuario } from "../../types";
 import AuthRequests from "../../fetch/AuthRequests";
 import grenaLogo from "../../assets/grena-logo.png";
 import grenaMascote from "../../assets/grena-mascote.png";
@@ -305,20 +305,23 @@ function PAdmin() {
 
         {page === "produtos" && (
           <section className="page-grid">
-            <FormPanel title={editing ? "Editar produto" : "Novo produto"} onSubmit={submitProduct} onCancel={editing ? cancelEdit : undefined}>
-              <Field label="Nome"><input value={productForm.nome} onChange={e => setProductForm({...productForm, nome:e.target.value})} placeholder="Ex.: Camiseta GRENÁ" /></Field>
-              <Field label="Descrição"><textarea value={productForm.descricao || ""} onChange={e => setProductForm({...productForm, descricao:e.target.value})} placeholder="Descrição do produto" /></Field>
-              <div className="two-cols">
-                <Field label="Preço"><input type="number" min="0" step="0.01" value={productForm.preco} onChange={e => setProductForm({...productForm, preco:Number(e.target.value)})} /></Field>
-                <Field label="Estoque"><input type="number" min="0" value={productForm.estoque} onChange={e => setProductForm({...productForm, estoque:Number(e.target.value)})} /></Field>
-              </div>
-              <Field label="Categoria">
-                <select value={productForm.idCategoria || ""} onChange={e => setProductForm({...productForm, idCategoria:Number(e.target.value)})}>
-                  <option value="">Selecione</option>
-                  {categories.map(c => <option key={c.idCategoria} value={c.idCategoria}>{c.nome}</option>)}
-                </select>
-              </Field>
-            </FormPanel>
+            <div className="admin-col">
+              <FormPanel title={editing ? "Editar produto" : "Novo produto"} onSubmit={submitProduct} onCancel={editing ? cancelEdit : undefined}>
+                <Field label="Nome"><input value={productForm.nome} onChange={e => setProductForm({...productForm, nome:e.target.value})} placeholder="Ex.: Camiseta GRENÁ" /></Field>
+                <Field label="Descrição"><textarea value={productForm.descricao || ""} onChange={e => setProductForm({...productForm, descricao:e.target.value})} placeholder="Descrição do produto" /></Field>
+                <div className="two-cols">
+                  <Field label="Preço"><input type="number" min="0" step="0.01" value={productForm.preco} onChange={e => setProductForm({...productForm, preco:Number(e.target.value)})} /></Field>
+                  <Field label="Estoque"><input type="number" min="0" value={productForm.estoque} onChange={e => setProductForm({...productForm, estoque:Number(e.target.value)})} /></Field>
+                </div>
+                <Field label="Categoria">
+                  <select value={productForm.idCategoria || ""} onChange={e => setProductForm({...productForm, idCategoria:Number(e.target.value)})}>
+                    <option value="">Selecione</option>
+                    {categories.map(c => <option key={c.idCategoria} value={c.idCategoria}>{c.nome}</option>)}
+                  </select>
+                </Field>
+              </FormPanel>
+              <BuscaPorId<Produto> entity="produtos" titulo="Buscar produto por ID" render={p => <><Dado label="ID">#{p.idProduto}</Dado><Dado label="Código">{p.codProduto || "—"}</Dado><Dado label="Nome">{p.nome}</Dado><Dado label="Categoria">{categoryName(p.idCategoria)}</Dado><Dado label="Preço">{money(p.preco)}</Dado><Dado label="Estoque">{p.estoque}</Dado><Dado label="Descrição">{p.descricao || "Sem descrição"}</Dado></>} />
+            </div>
             <TablePanel title="Produtos" count={products.length}>
               <table><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead>
               <tbody>{products.map(p => <tr key={p.idProduto}><td><strong>{p.nome}</strong><small>{p.descricao || "Sem descrição"}</small></td><td>{categoryName(p.idCategoria)}</td><td>{money(p.preco)}</td><td>{p.estoque}</td><td><Actions onEdit={() => editProduct(p)} onDelete={() => remove("produtos", p.idProduto)} /></td></tr>)}</tbody></table>
@@ -329,9 +332,12 @@ function PAdmin() {
 
         {page === "categorias" && (
           <section className="page-grid compact">
-            <FormPanel title={editing ? "Editar categoria" : "Nova categoria"} onSubmit={submitCategory} onCancel={editing ? cancelEdit : undefined}>
-              <Field label="Nome"><input value={categoryForm.nome} onChange={e => setCategoryForm({nome:e.target.value})} placeholder="Ex.: Eletrônicos" /></Field>
-            </FormPanel>
+            <div className="admin-col">
+              <FormPanel title={editing ? "Editar categoria" : "Nova categoria"} onSubmit={submitCategory} onCancel={editing ? cancelEdit : undefined}>
+                <Field label="Nome"><input value={categoryForm.nome} onChange={e => setCategoryForm({nome:e.target.value})} placeholder="Ex.: Eletrônicos" /></Field>
+              </FormPanel>
+              <BuscaPorId<Categoria> entity="categorias" titulo="Buscar categoria por ID" render={c => <><Dado label="ID">#{c.idCategoria}</Dado><Dado label="Nome">{c.nome}</Dado></>} />
+            </div>
             <TablePanel title="Categorias" count={categories.length}>
               <table><thead><tr><th>ID</th><th>Nome</th><th>Ações</th></tr></thead>
               <tbody>{categories.map(c => <tr key={c.idCategoria}><td>#{c.idCategoria}</td><td><strong>{c.nome}</strong></td><td><Actions onEdit={() => editCategory(c)} onDelete={() => remove("categorias", c.idCategoria)} /></td></tr>)}</tbody></table>
@@ -342,13 +348,16 @@ function PAdmin() {
 
         {page === "usuarios" && (
           <section className="page-grid">
-            <FormPanel title={editing ? "Editar usuário" : "Novo usuário"} onSubmit={submitUser} onCancel={editing ? cancelEdit : undefined}>
-              <Field label="Nome"><input value={userForm.nome} onChange={e => setUserForm({...userForm, nome:e.target.value})} /></Field>
-              <Field label="E-mail"><input type="email" value={userForm.email} onChange={e => setUserForm({...userForm, email:e.target.value})} /></Field>
-              <Field label="CPF"><input value={userForm.cpf} onChange={e => setUserForm({...userForm, cpf:e.target.value})} placeholder="Somente conforme seu banco aceitar" /></Field>
-              {!editing && <Field label="Senha"><input type="password" value={userForm.senha} onChange={e => setUserForm({...userForm, senha:e.target.value})} /></Field>}
-              {editing && <p className="hint">A API atual não atualiza a senha no PUT; por isso ela não é enviada durante a edição.</p>}
-            </FormPanel>
+            <div className="admin-col">
+              <FormPanel title={editing ? "Editar usuário" : "Novo usuário"} onSubmit={submitUser} onCancel={editing ? cancelEdit : undefined}>
+                <Field label="Nome"><input value={userForm.nome} onChange={e => setUserForm({...userForm, nome:e.target.value})} /></Field>
+                <Field label="E-mail"><input type="email" value={userForm.email} onChange={e => setUserForm({...userForm, email:e.target.value})} /></Field>
+                <Field label="CPF"><input value={userForm.cpf} onChange={e => setUserForm({...userForm, cpf:e.target.value})} placeholder="Somente conforme seu banco aceitar" /></Field>
+                {!editing && <Field label="Senha"><input type="password" value={userForm.senha} onChange={e => setUserForm({...userForm, senha:e.target.value})} /></Field>}
+                {editing && <p className="hint">A API atual não atualiza a senha no PUT; por isso ela não é enviada durante a edição.</p>}
+              </FormPanel>
+              <BuscaPorId<Usuario> entity="usuarios" titulo="Buscar usuário por ID" render={u => <><Dado label="ID">#{u.idUsuario}</Dado><Dado label="Nome">{u.nome}</Dado><Dado label="E-mail">{u.email}</Dado><Dado label="CPF">{u.cpf || "—"}</Dado><Dado label="Perfil">{u.role || "cliente"}</Dado></>} />
+            </div>
             <TablePanel title="Usuários" count={users.length}>
               <table><thead><tr><th>Usuário</th><th>E-mail</th><th>CPF</th><th>Ações</th></tr></thead>
               <tbody>{users.map(u => <tr key={u.idUsuario}><td><strong>{u.nome}</strong><small>#{u.idUsuario}</small></td><td>{u.email}</td><td>{u.cpf}</td><td><Actions onEdit={() => editUser(u)} onDelete={() => remove("usuarios", u.idUsuario)} /></td></tr>)}</tbody></table>
@@ -359,20 +368,23 @@ function PAdmin() {
 
         {page === "pedidos" && (
           <section className="page-grid">
-            <FormPanel title={editing ? "Editar pedido" : "Novo pedido"} onSubmit={submitOrder} onCancel={editing ? cancelEdit : undefined}>
-              <Field label="Usuário">
-                <select value={orderForm.idUsuario || ""} onChange={e => setOrderForm({...orderForm, idUsuario:Number(e.target.value)})}>
-                  <option value="">Selecione</option>
-                  {users.map(u => <option key={u.idUsuario} value={u.idUsuario}>{u.nome}</option>)}
-                </select>
-              </Field>
-              <Field label="Valor total"><input type="number" min="0" step="0.01" value={orderForm.valorTotal} onChange={e => setOrderForm({...orderForm, valorTotal:Number(e.target.value)})} /></Field>
-              <Field label="Status">
-                <select value={orderForm.status || "PENDENTE"} onChange={e => setOrderForm({...orderForm, status:e.target.value})}>
-                  <option>PENDENTE</option><option>PROCESSANDO</option><option>ENVIADO</option><option>CONCLUIDO</option><option>CANCELADO</option>
-                </select>
-              </Field>
-            </FormPanel>
+            <div className="admin-col">
+              <FormPanel title={editing ? "Editar pedido" : "Novo pedido"} onSubmit={submitOrder} onCancel={editing ? cancelEdit : undefined}>
+                <Field label="Usuário">
+                  <select value={orderForm.idUsuario || ""} onChange={e => setOrderForm({...orderForm, idUsuario:Number(e.target.value)})}>
+                    <option value="">Selecione</option>
+                    {users.map(u => <option key={u.idUsuario} value={u.idUsuario}>{u.nome}</option>)}
+                  </select>
+                </Field>
+                <Field label="Valor total"><input type="number" min="0" step="0.01" value={orderForm.valorTotal} onChange={e => setOrderForm({...orderForm, valorTotal:Number(e.target.value)})} /></Field>
+                <Field label="Status">
+                  <select value={orderForm.status || "PENDENTE"} onChange={e => setOrderForm({...orderForm, status:e.target.value})}>
+                    <option>PENDENTE</option><option>PROCESSANDO</option><option>ENVIADO</option><option>CONCLUIDO</option><option>CANCELADO</option>
+                  </select>
+                </Field>
+              </FormPanel>
+              <BuscaPorId<Pedido> entity="pedidos" titulo="Buscar pedido por ID" render={o => <><Dado label="ID">#{o.idPedido}</Dado><Dado label="Código">{o.codPedido || "—"}</Dado><Dado label="Usuário">{userName(o.idUsuario)}</Dado><Dado label="Data">{formatDate(o.dataPedido)}</Dado><Dado label="Total">{money(o.valorTotal)}</Dado><Dado label="Status"><Status status={o.status} /></Dado></>} />
+            </div>
             <TablePanel title="Pedidos" count={orders.length}>
               <table><thead><tr><th>Pedido</th><th>Usuário</th><th>Data</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead>
               <tbody>{orders.map(o => <tr key={o.idPedido}><td><strong>{o.codPedido || `#${o.idPedido}`}</strong></td><td>{userName(o.idUsuario)}</td><td>{formatDate(o.dataPedido)}</td><td>{money(o.valorTotal)}</td><td><Status status={o.status} /></td><td><Actions onEdit={() => editOrder(o)} onDelete={() => remove("pedidos", o.idPedido)} /></td></tr>)}</tbody></table>
@@ -402,6 +414,42 @@ function Actions({onEdit,onDelete}:{onEdit:()=>void;onDelete:()=>void}) {
 }
 function Status({status}:{status?:string}) {
   return <span className={`status ${String(status || "PENDENTE").toLowerCase()}`}>{status || "PENDENTE"}</span>;
+}
+function BuscaPorId<T>({entity,titulo,render}:{entity:ApiEntity;titulo:string;render:(item:T)=>ReactNode}) {
+  const [id, setId] = useState("");
+  const [item, setItem] = useState<T | null>(null);
+  const [erro, setErro] = useState("");
+  const [buscando, setBuscando] = useState(false);
+
+  async function buscar(e: FormEvent) {
+    e.preventDefault();
+    const numero = Number(id);
+    setItem(null);
+    if (!Number.isInteger(numero) || numero <= 0) {
+      setErro("Informe um ID válido (número inteiro maior que zero).");
+      return;
+    }
+    setErro("");
+    setBuscando(true);
+    try {
+      setItem(await api.buscar<T>(entity, numero));
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : "Registro não encontrado.");
+    } finally {
+      setBuscando(false);
+    }
+  }
+
+  function limpar() {
+    setId("");
+    setItem(null);
+    setErro("");
+  }
+
+  return <div className="panel busca-id"><div className="panel-title"><h3>{titulo}</h3></div><form className="busca-id-form" onSubmit={buscar}><input type="number" min="1" step="1" value={id} onChange={e => setId(e.target.value)} placeholder="ID" aria-label={titulo} /><button className="primary" type="submit" disabled={buscando}>{buscando ? "Buscando..." : "Buscar"}</button>{(item || erro) && <button className="secondary" type="button" onClick={limpar}>Limpar</button>}</form>{erro && <p className="busca-id-erro">{erro}</p>}{item && <dl className="busca-id-resultado">{render(item)}</dl>}</div>;
+}
+function Dado({label, children}:{label:string;children:ReactNode}) {
+  return <><dt>{label}</dt><dd>{children}</dd></>;
 }
 function Empty({text}:{text:string}) { return <div className="empty">{text}</div>; }
 function money(value:number) { return Number(value || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
